@@ -54,10 +54,9 @@
     nav.nav-left a:hover { border-bottom-color: var(--black); }
 
     .logo {
-      text-align: center; font-size: 20px; font-weight: 800;
-      letter-spacing: 5px; text-transform: uppercase;
-      text-decoration: none; color: var(--black);
+      text-decoration: none; display: flex; align-items: center;
     }
+    .logo img { height: 36px; width: auto; display: block; }
 
     .header-actions {
       display: flex; justify-content: flex-end;
@@ -422,7 +421,7 @@
       <a onclick="filterBy('hoodies');return false;">Hoodies</a>
       <a onclick="filterBy('accesorios');return false;">Accesorios</a>
     </nav>
-    <a class="logo" href="#">OV ACTIVE</a>
+    <a class="logo" href="#"><img src="./ov_logo.png" alt="OV Active" /></a>
     <div class="header-actions">
       <button aria-label="Buscar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>

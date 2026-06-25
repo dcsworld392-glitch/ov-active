@@ -362,9 +362,23 @@
     .cart-item-price { font-size: 13px; font-weight: 700; }
     .cart-footer { padding: 20px 28px; border-top: 1px solid var(--gray-200); }
     .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 14px; font-weight: 700; }
-    .cart-checkout { width: 100%; padding: 16px; background: var(--black); color: var(--white); border: none; font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: var(--font); }
+    .cart-checkout { width: 100%; padding: 16px; background: var(--black); color: var(--white); border: none; font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: var(--font); display: flex; align-items: center; justify-content: center; gap: 10px; transition: opacity 0.2s; }
+    .cart-checkout:hover { opacity: 0.85; }
+    .cart-checkout:disabled { opacity: 0.5; cursor: not-allowed; }
+    .mp-logo { height: 18px; }
     .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 390; }
     .sidebar-overlay.open { display: block; }
+
+    /* ── PAGO STATUS BANNER ── */
+    .pago-banner {
+      display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      padding: 14px 24px; font-size: 13px; font-weight: 600;
+      text-align: center; letter-spacing: 0.5px;
+    }
+    .pago-banner.aprobado { display: block; background: #2d6a4f; color: #fff; }
+    .pago-banner.error    { display: block; background: #8a3030; color: #fff; }
+    .pago-banner.pendiente{ display: block; background: #7a6030; color: #fff; }
+    .pago-banner-close { float: right; cursor: pointer; opacity: 0.7; font-size: 18px; line-height: 1; }
 
     /* ── SKELETONS ── */
     .skel-card { cursor: default; }
@@ -590,6 +604,12 @@
   </div>
 </div>
 
+<!-- PAGO STATUS BANNER -->
+<div class="pago-banner" id="pago-banner">
+  <span id="pago-banner-msg"></span>
+  <span class="pago-banner-close" onclick="document.getElementById('pago-banner').className='pago-banner'">×</span>
+</div>
+
 <!-- CART -->
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeCart()"></div>
 <div class="cart-sidebar" id="cart-sidebar">
@@ -600,7 +620,13 @@
   <div class="cart-items" id="cart-items-list"></div>
   <div class="cart-footer" id="cart-footer" style="display:none">
     <div class="cart-total"><span>Total</span><span id="cart-total-price">$0</span></div>
-    <button class="cart-checkout">Iniciar compra</button>
+    <button class="cart-checkout" id="checkout-btn" onclick="initCheckout()">
+      Pagar con
+      <svg class="mp-logo" viewBox="0 0 90 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="0" y="18" font-family="Arial" font-size="14" font-weight="700" fill="white">Mercado Pago</text>
+      </svg>
+    </button>
+    <p style="font-size:10px;color:var(--gray-400);text-align:center;margin-top:10px;letter-spacing:0.5px">🔒 Pago seguro · Tarjetas · Efectivo · Cuotas</p>
   </div>
 </div>
 
@@ -801,6 +827,64 @@
 
   loadSettings();
   loadProducts();
+
+  // ── MERCADO PAGO CHECKOUT ──
+  const EDGE_URL = 'https://glyqnvzaqzlqmlkkpibk.supabase.co/functions/v1/create-preference';
+
+  async function initCheckout() {
+    if (!cart.length) return;
+    const btn = document.getElementById('checkout-btn');
+    btn.disabled = true;
+    btn.textContent = 'Procesando…';
+
+    try {
+      const res = await fetch(EDGE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: cart.map(i => ({
+            id: i.id,
+            name: i.name,
+            qty: i.qty,
+            price: i.price,
+            image: i.image,
+          }))
+        })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      // Redirigir a Mercado Pago
+      window.location.href = data.init_point;
+    } catch (err) {
+      btn.disabled = false;
+      btn.innerHTML = 'Pagar con Mercado Pago';
+      alert('Error al procesar el pago. Intentá de nuevo.');
+      console.error(err);
+    }
+  }
+
+  // ── DETECTAR RETORNO DESDE MERCADO PAGO ──
+  (function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const estado = params.get('pago');
+    if (!estado) return;
+
+    const msgs = {
+      aprobado:  '✓ ¡Pago aprobado! Tu pedido está confirmado. Te llegará un email con los detalles.',
+      error:     '✗ El pago no se pudo procesar. Por favor intentá de nuevo.',
+      pendiente: '⏳ Tu pago está pendiente de acreditación. Te avisaremos cuando se confirme.',
+    };
+
+    const banner = document.getElementById('pago-banner');
+    const msg    = document.getElementById('pago-banner-msg');
+    if (msgs[estado]) {
+      banner.className = `pago-banner ${estado}`;
+      msg.textContent  = msgs[estado];
+      if (estado === 'aprobado') cart = []; updateCartUI();
+      // Limpiar URL
+      history.replaceState({}, '', window.location.pathname);
+    }
+  })();
 </script>
 </body>
 </html>

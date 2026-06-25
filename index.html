@@ -86,8 +86,11 @@
     }
 
     .hero-bg {
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, #1a1814 0%, #2c2820 45%, #1a1a14 100%);
+      position: absolute; inset: 0; overflow: hidden;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center 30%;
+      filter: brightness(0.45) saturate(0.7);
     }
 
     .hero-content {
@@ -163,11 +166,14 @@
     .cat-card {
       aspect-ratio: 3/4; position: relative;
       overflow: hidden; cursor: pointer; background: var(--gray-100);
+      transition: transform 0.4s ease;
     }
-    .cat-placeholder { width: 100%; height: 100%; }
+    .cat-card:hover { transform: scale(1.01); }
+    .cat-placeholder { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+    .cat-card:hover .cat-placeholder { transform: scale(1.06); }
     .cat-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(20,20,20,0.55) 0%, transparent 60%);
+      background: linear-gradient(to top, rgba(14,14,12,0.7) 0%, rgba(14,14,12,0.1) 55%, transparent 100%);
       display: flex; align-items: flex-end; padding: 20px 16px;
     }
     .cat-label { color: var(--white); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -260,8 +266,8 @@
     /* ── SPLIT BANNER ── */
     .split-banner { display: grid; grid-template-columns: 1fr 1fr; }
     .split-panel { position: relative; height: 580px; overflow: hidden; }
-    .sp-dark  { width:100%;height:100%;background:linear-gradient(160deg,#1a1814,#2c2416); }
-    .sp-light { width:100%;height:100%;background:linear-gradient(160deg,#f0ece4,#e4ddd2); }
+    .sp-dark  { width:100%;height:100%;object-fit:cover;filter:brightness(0.5) saturate(0.7); }
+    .sp-light { width:100%;height:100%;object-fit:cover;filter:brightness(0.85) saturate(0.6); }
     .split-content {
       position: absolute; inset: 0;
       display: flex; flex-direction: column; justify-content: flex-end; padding: 52px;
@@ -420,7 +426,9 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1483721310020-03333e577078?w=1600&q=80&fit=crop" alt="OV Active Hero" />
+  </div>
   <div class="hero-num">25</div>
   <div class="hero-content">
     <p class="hero-eyebrow" id="hero-eyebrow">Nueva Colección 2025</p>
@@ -441,23 +449,23 @@
   </div>
   <div class="cat-grid">
     <div class="cat-card" onclick="filterBy('calzas')">
-      <div class="cat-placeholder" style="background:linear-gradient(160deg,#d8d0c4,#b8aa96)"></div>
+      <img class="cat-placeholder" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80&fit=crop" alt="Calzas" loading="lazy"/>
       <div class="cat-overlay"><span class="cat-label">Calzas</span></div>
     </div>
     <div class="cat-card" onclick="filterBy('tops')">
-      <div class="cat-placeholder" style="background:linear-gradient(160deg,#e4ddd4,#c4bcb0)"></div>
+      <img class="cat-placeholder" src="https://images.unsplash.com/photo-1594381898411-846e7d193883?w=600&q=80&fit=crop" alt="Tops" loading="lazy"/>
       <div class="cat-overlay"><span class="cat-label">Tops</span></div>
     </div>
     <div class="cat-card" onclick="filterBy('conjuntos')">
-      <div class="cat-placeholder" style="background:linear-gradient(160deg,#c8c4bc,#a0999090)"></div>
+      <img class="cat-placeholder" src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&q=80&fit=crop" alt="Conjuntos" loading="lazy"/>
       <div class="cat-overlay"><span class="cat-label">Conjuntos</span></div>
     </div>
     <div class="cat-card" onclick="filterBy('hoodies')">
-      <div class="cat-placeholder" style="background:linear-gradient(160deg,#d4ccc4,#b0aaa0)"></div>
+      <img class="cat-placeholder" src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80&fit=crop" alt="Hoodies" loading="lazy"/>
       <div class="cat-overlay"><span class="cat-label">Hoodies</span></div>
     </div>
     <div class="cat-card" onclick="filterBy('accesorios')">
-      <div class="cat-placeholder" style="background:linear-gradient(160deg,#dcd4c8,#b8aa9c)"></div>
+      <img class="cat-placeholder" src="https://images.unsplash.com/photo-1548690459-7b49e0a9cd6e?w=600&q=80&fit=crop" alt="Accesorios" loading="lazy"/>
       <div class="cat-overlay"><span class="cat-label">Accesorios</span></div>
     </div>
   </div>
@@ -488,7 +496,7 @@
 <!-- SPLIT BANNER -->
 <div class="split-banner">
   <div class="split-panel">
-    <div class="sp-dark"></div>
+    <img class="sp-dark" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900&q=80&fit=crop" alt="Calzas" />
     <div class="split-content dark">
       <p class="split-eyebrow">Para ella</p>
       <h2 class="split-title">Colección<br/>Align</h2>
@@ -496,11 +504,11 @@
     </div>
   </div>
   <div class="split-panel">
-    <div class="sp-light"></div>
-    <div class="split-content light">
+    <img class="sp-light" src="https://images.unsplash.com/photo-1520006403909-838d6b92c22e?w=900&q=80&fit=crop" alt="Conjuntos" />
+    <div class="split-content light" style="color:var(--white)">
       <p class="split-eyebrow">Sets completos</p>
       <h2 class="split-title">Conjuntos<br/>Neutral</h2>
-      <a onclick="filterBy('conjuntos');return false;" href="#" class="btn btn-black">Explorar conjuntos</a>
+      <a onclick="filterBy('conjuntos');return false;" href="#" class="btn btn-white">Explorar conjuntos</a>
     </div>
   </div>
 </div>

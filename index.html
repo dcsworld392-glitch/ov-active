@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Tienda</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --gray-100: #f5f5f5;
+      --gray-200: #e8e8e8;
+      --gray-400: #999999;
+      --gray-600: #555555;
+      --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--black);
+      background: var(--white);
+    }
+
+    /* ── ANNOUNCEMENT BAR ── */
+    .announcement {
+      background: var(--black);
+      color: var(--white);
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .header-inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 32px;
+      height: 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    nav.nav-left {
+      display: flex;
+      gap: 28px;
+    }
+
+    nav.nav-left a {
+      text-decoration: none;
+      color: var(--black);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding-bottom: 2px;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    nav.nav-left a:hover { border-bottom-color: var(--black); }
+
+    .logo {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--black);
+    }
+
+    .header-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-actions button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--black);
+    }
+
+    .header-actions svg { width: 20px; height: 20px; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 85vh;
+      min-height: 520px;
+      overflow: hidden;
+      background: var(--gray-100);
+    }
+
+    .hero-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Placeholder gradient when no image */
+    .hero-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 40%, #5a5a5a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      padding: 64px;
+    }
+
+    .hero-content {
+      color: var(--white);
+      max-width: 480px;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      opacity: 0.85;
+    }
+
+    .hero-title {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: 2px solid;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-white {
+      background: var(--white);
+      color: var(--black);
+      border-color: var(--white);
+    }
+    .btn-white:hover { background: transparent; color: var(--white); }
+
+    .btn-black {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+    }
+    .btn-black:hover { background: transparent; color: var(--black); }
+
+    /* ── CATEGORIES ── */
+    .section { padding: 64px 32px; max-width: 1400px; margin: 0 auto; }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .section-link {
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--black);
+      border-bottom: 1px solid var(--black);
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .category-card {
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+      background: var(--gray-100);
+      aspect-ratio: 3/4;
+    }
+
+    .category-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .category-card:hover .category-img { transform: scale(1.04); }
+
+    .category-placeholder {
+      width: 100%;
+      height: 100%;
+    }
+
+    .cat-1 { background: linear-gradient(160deg, #c8d8e8, #8aa8c0); }
+    .cat-2 { background: linear-gradient(160deg, #e8d8c8, #c0a890); }
+    .cat-3 { background: linear-gradient(160deg, #d8e8d8, #98c098); }
+    .cat-4 { background: linear-gradient(160deg, #e8d8e8, #c098c0); }
+
+    .category-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 40px 20px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+      color: var(--white);
+    }
+
+    .category-label span {
+      display: block;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .category-label a {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.6);
+    }
+
+    /* ── PRODUCTS GRID ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px 16px;
+    }
+
+    .product-card { cursor: pointer; }
+
+    .product-image-wrap {
+      position: relative;
+      background: var(--gray-100);
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      margin-bottom: 12px;
+    }
+
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .product-img { transform: scale(1.03); }
+
+    .product-img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .p1 { background: #dce4ec; }
+    .p2 { background: #ece4dc; }
+    .p3 { background: #dcecd8; }
+    .p4 { background: #ecdce8; }
+    .p5 { background: #e8e8dc; }
+    .p6 { background: #dce8ec; }
+    .p7 { background: #ecdce0; }
+    .p8 { background: #e4ecdc; }
+
+    .product-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--black);
+      color: var(--white);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 8px;
+    }
+
+    .wishlist-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--white);
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .product-card:hover .wishlist-btn { opacity: 1; }
+
+    .product-info { padding: 0 4px; }
+
+    .product-colors {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gray-200);
+      cursor: pointer;
+    }
+    .color-dot.active { border-color: var(--black); }
+
+    .product-name {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .product-desc {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+
+    .product-price {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .price-original {
+      text-decoration: line-through;
+      color: var(--gray-400);
+      margin-right: 8px;
+      font-weight: 400;
+    }
+
+    .price-sale { color: #c0392b; }
+
+    /* ── SPLIT BANNER ── */
+    .split-banner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin: 0 0 0 0;
+    }
+
+    .split-panel {
+      position: relative;
+      height: 560px;
+      overflow: hidden;
+    }
+
+    .split-panel-bg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sp-dark { background: linear-gradient(160deg, #1a1a2e, #16213e); }
+    .sp-light { background: linear-gradient(160deg, #f0ede8, #e8e0d8); }
+
+    .split-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 48px;
+    }
+
+    .split-content.dark { color: var(--white); }
+    .split-content.light { color: var(--black); }
+
+    .split-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      opacity: 0.75;
+    }
+
+    .split-title {
+      font-size: clamp(26px, 3vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      background: var(--gray-100);
+      text-align: center;
+      padding: 80px 32px;
+    }
+
+    .newsletter h2 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .newsletter p {
+      font-size: 15px;
+      color: var(--gray-600);
+      margin-bottom: 32px;
+    }
+
+    .newsletter-form {
+      display: flex;
+      max-width: 440px;
+      margin: 0 auto;
+      gap: 0;
+    }
+
+    .newsletter-form input {
+      flex: 1;
+      padding: 14px 20px;
+      border: 1.5px solid var(--black);
+      border-right: none;
+      font-size: 14px;
+      font-family: var(--font);
+      outline: none;
+      background: var(--white);
+    }
+
+    .newsletter-form input::placeholder { color: var(--gray-400); }
+
+    .newsletter-form button {
+      padding: 14px 28px;
+      background: var(--black);
+      color: var(--white);
+      border: 1.5px solid var(--black);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: background 0.2s;
+    }
+
+    .newsletter-form button:hover { background: #333; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 64px 32px 32px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      max-width: 1400px;
+      margin: 0 auto 48px;
+    }
+
+    .footer-brand .logo { color: var(--white); font-size: 20px; display: block; margin-bottom: 16px; }
+    .footer-brand p { font-size: 13px; color: #999; line-height: 1.6; max-width: 260px; }
+
+    .footer-col h4 {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+
+    .footer-col a {
+      display: block;
+      font-size: 13px;
+      color: #999;
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--white); }
+
+    .footer-bottom {
+      max-width: 1400px;
+      margin: 0 auto;
+      border-top: 1px solid #333;
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-bottom p { font-size: 12px; color: #666; }
+
+    .social-links { display: flex; gap: 16px; }
+    .social-links a {
+      color: #999;
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .social-links a:hover { color: var(--white); }
+
+    /* ── CART ICON BADGE ── */
+    .cart-wrap { position: relative; }
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      background: var(--black);
+      color: var(--white);
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 9px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .categories-grid { grid-template-columns: repeat(2, 1fr); }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .split-banner { grid-template-columns: 1fr; }
+      .split-panel { height: 420px; }
+    }
+
+    @media (max-width: 600px) {
+      .header-inner { padding: 0 16px; }
+      nav.nav-left { display: none; }
+      .hero-overlay { padding: 32px 24px; }
+      .section { padding: 40px 16px; }
+      .categories-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px 8px; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ANNOUNCEMENT BAR -->
+  <div class="announcement">Envío gratis en compras mayores a $999 &nbsp;·&nbsp; Nuevas llegadas disponibles</div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <nav class="nav-left">
+        <a href="#">Mujer</a>
+        <a href="#">Hombre</a>
+        <a href="#">Accesorios</a>
+        <a href="#">Novedades</a>
+        <a href="#">Ofertas</a>
+      </nav>
+
+      <a class="logo" href="#">MI&nbsp;TIENDA</a>
+
+      <div class="header-actions">
+        <!-- Search -->
+        <button aria-label="Buscar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+          </svg>
+        </button>
+        <!-- Account -->
+        <button aria-label="Cuenta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </button>
+        <!-- Cart -->
+        <button aria-label="Carrito" class="cart-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="cart-badge">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-placeholder" style="background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 50%, #1a2e1a 100%);">
+      <!-- Reemplaza esto con: <img src="tu-imagen.jpg" alt="Hero" class="hero-bg" /> -->
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none" opacity="0.15">
+        <circle cx="60" cy="60" r="50" stroke="white" stroke-width="2"/>
+        <path d="M40 60 Q60 30 80 60 Q60 90 40 60Z" fill="white"/>
+      </svg>
+    </div>
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <p class="hero-eyebrow">Nueva Colección 2025</p>
+        <h1 class="hero-title">Muévete sin límites</h1>
+        <a href="#productos" class="btn btn-white">Ver colección</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">Compra por categoría</h2>
+      <a href="#" class="section-link">Ver todo</a>
+    </div>
+    <div class="categories-grid">
+      <div class="category-card">
+        <div class="category-placeholder cat-1">
+          <!-- <img src="mujer.jpg" alt="Mujer" class="category-img" /> -->
+        </div>
+        <div class="category-label">
+          <span>Mujer</span>
+          <a href="#">Comprar ahora</a>
+        </div>
+      </div>
+      <div class="category-card">
+        <div class="category-placeholder cat-2">
+          <!-- <img src="hombre.jpg" alt="Hombre" class="category-img" /> -->
+        </div>
+        <div class="category-label">
+          <span>Hombre</span>
+          <a href="#">Comprar ahora</a>
+        </div>
+      </div>
+      <div class="category-card">
+        <div class="category-placeholder cat-3">
+          <!-- <img src="accesorios.jpg" alt="Accesorios" class="category-img" /> -->
+        </div>
+        <div class="category-label">
+          <span>Accesorios</span>
+          <a href="#">Comprar ahora</a>
+        </div>
+      </div>
+      <div class="category-card">
+        <div class="category-placeholder cat-4">
+          <!-- <img src="outlet.jpg" alt="Outlet" class="category-img" /> -->
+        </div>
+        <div class="category-label">
+          <span>Outlet</span>
+          <a href="#">Comprar ahora</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="section" id="productos">
+    <div class="section-header">
+      <h2 class="section-title">Más vendidos</h2>
+      <a href="#" class="section-link">Ver todos</a>
+    </div>
+    <div class="products-grid">
+
+      <!-- Producto 1 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p1">
+            <!-- <img src="producto1.jpg" alt="Producto 1" class="product-img" /> -->
+          </div>
+          <span class="product-badge">Nuevo</span>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#2c3e7a"></div>
+            <div class="color-dot" style="background:#1a1a1a"></div>
+            <div class="color-dot" style="background:#7a4a2c"></div>
+          </div>
+          <p class="product-name">Legging de Alto Rendimiento</p>
+          <p class="product-desc">28"</p>
+          <p class="product-price">$1,590</p>
+        </div>
+      </div>
+
+      <!-- Producto 2 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p2">
+            <!-- <img src="producto2.jpg" alt="Producto 2" class="product-img" /> -->
+          </div>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#c8a882"></div>
+            <div class="color-dot" style="background:#f0ede8"></div>
+          </div>
+          <p class="product-name">Top de Entrenamiento Suelto</p>
+          <p class="product-desc">Talla XS–XL</p>
+          <p class="product-price">$890</p>
+        </div>
+      </div>
+
+      <!-- Producto 3 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p3">
+            <!-- <img src="producto3.jpg" alt="Producto 3" class="product-img" /> -->
+          </div>
+          <span class="product-badge">−20%</span>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#6a8a6a"></div>
+            <div class="color-dot" style="background:#4a6a4a"></div>
+            <div class="color-dot" style="background:#2a4a2a"></div>
+          </div>
+          <p class="product-name">Shorts de Yoga 5"</p>
+          <p class="product-desc">Tela ultrasuave</p>
+          <p class="product-price">
+            <span class="price-original">$750</span>
+            <span class="price-sale">$599</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Producto 4 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p4">
+            <!-- <img src="producto4.jpg" alt="Producto 4" class="product-img" /> -->
+          </div>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#9a6a9a"></div>
+            <div class="color-dot" style="background:#1a1a1a"></div>
+          </div>
+          <p class="product-name">Sujetador Deportivo Alineado</p>
+          <p class="product-desc">Soporte medio</p>
+          <p class="product-price">$990</p>
+        </div>
+      </div>
+
+      <!-- Producto 5 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p5">
+            <!-- <img src="producto5.jpg" alt="Producto 5" class="product-img" /> -->
+          </div>
+          <span class="product-badge">Nuevo</span>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#9a9a6a"></div>
+            <div class="color-dot" style="background:#6a6a4a"></div>
+            <div class="color-dot" style="background:#f0ede8"></div>
+          </div>
+          <p class="product-name">Sudadera Scuba con Capucha</p>
+          <p class="product-desc">Fleece interior</p>
+          <p class="product-price">$1,890</p>
+        </div>
+      </div>
+
+      <!-- Producto 6 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p6">
+            <!-- <img src="producto6.jpg" alt="Producto 6" class="product-img" /> -->
+          </div>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#6a9a9a"></div>
+            <div class="color-dot" style="background:#1a1a1a"></div>
+          </div>
+          <p class="product-name">Pantalón Jogger Masculino</p>
+          <p class="product-desc">Corte relajado</p>
+          <p class="product-price">$1,290</p>
+        </div>
+      </div>
+
+      <!-- Producto 7 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p7">
+            <!-- <img src="producto7.jpg" alt="Producto 7" class="product-img" /> -->
+          </div>
+          <span class="product-badge">−15%</span>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#9a6a70"></div>
+            <div class="color-dot" style="background:#f0ede8"></div>
+          </div>
+          <p class="product-name">Mochila de Entrenamiento 20L</p>
+          <p class="product-desc">Resistente al agua</p>
+          <p class="product-price">
+            <span class="price-original">$1,400</span>
+            <span class="price-sale">$1,190</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Producto 8 -->
+      <div class="product-card">
+        <div class="product-image-wrap">
+          <div class="product-img-placeholder p8">
+            <!-- <img src="producto8.jpg" alt="Producto 8" class="product-img" /> -->
+          </div>
+          <button class="wishlist-btn" aria-label="Guardar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="product-info">
+          <div class="product-colors">
+            <div class="color-dot active" style="background:#7a9a6a"></div>
+            <div class="color-dot" style="background:#1a1a1a"></div>
+            <div class="color-dot" style="background:#6a7a9a"></div>
+          </div>
+          <p class="product-name">Camiseta Técnica de Running</p>
+          <p class="product-desc">Secado rápido</p>
+          <p class="product-price">$690</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SPLIT BANNER -->
+  <div class="split-banner">
+    <div class="split-panel">
+      <div class="sp-dark"></div>
+      <div class="split-content dark">
+        <p class="split-eyebrow">Para ellas</p>
+        <h2 class="split-title">Colección Align<br/>Primavera 2025</h2>
+        <a href="#" class="btn btn-white">Explorar</a>
+      </div>
+    </div>
+    <div class="split-panel">
+      <div class="sp-light"></div>
+      <div class="split-content light">
+        <p class="split-eyebrow">Para ellos</p>
+        <h2 class="split-title">Rendimiento<br/>sin restricciones</h2>
+        <a href="#" class="btn btn-black">Explorar</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter">
+    <h2>Únete a nuestra comunidad</h2>
+    <p>Sé el primero en conocer nuevos lanzamientos, eventos y ofertas exclusivas.</p>
+    <form class="newsletter-form" onsubmit="return false;">
+      <input type="email" placeholder="Tu correo electrónico" />
+      <button type="submit">Suscribirse</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo">MI&nbsp;TIENDA</a>
+        <p>Ropa de alto rendimiento diseñada para mover tu cuerpo y elevar tu mente.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Ayuda</h4>
+        <a href="#">Centro de ayuda</a>
+        <a href="#">Seguimiento de pedido</a>
+        <a href="#">Devoluciones</a>
+        <a href="#">Guía de tallas</a>
+        <a href="#">Contacto</a>
+      </div>
+      <div class="footer-col">
+        <h4>Empresa</h4>
+        <a href="#">Sobre nosotros</a>
+        <a href="#">Tiendas</a>
+        <a href="#">Carreras</a>
+        <a href="#">Responsabilidad</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Política de privacidad</a>
+        <a href="#">Términos de uso</a>
+        <a href="#">Accesibilidad</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Mi Tienda. Todos los derechos reservados.</p>
+      <div class="social-links">
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+        <a href="#">Facebook</a>
+        <a href="#">Pinterest</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

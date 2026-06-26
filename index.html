@@ -406,6 +406,47 @@
       .prod-modal-info { max-height: none; }
       .footer-grid { grid-template-columns: 1fr; }
     }
+
+    /* ── SOBRE NOSOTROS ── */
+    .sobre-section{background:var(--black);color:var(--white);padding:80px 40px;text-align:center;}
+    .sobre-inner{max-width:860px;margin:0 auto;}
+    .sobre-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:20px;}
+    .sobre-title{font-size:clamp(28px,4vw,48px);font-weight:200;letter-spacing:2px;margin-bottom:28px;line-height:1.2;}
+    .sobre-body{font-size:15px;color:var(--gray-400);line-height:1.8;max-width:640px;margin:0 auto 48px;}
+    .sobre-values{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:48px;text-align:left;}
+    .sobre-val-icon{font-size:22px;margin-bottom:12px;}
+    .sobre-val-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--white);}
+    .sobre-val-text{font-size:13px;color:var(--gray-400);line-height:1.6;}
+    @media(max-width:768px){.sobre-values{grid-template-columns:1fr;gap:24px;}.sobre-section{padding:56px 20px;}}
+    /* ── GUIA DE TALLES ── */
+    .size-guide{margin:18px 0 0;padding:14px;background:var(--gray-100);}
+    .size-guide summary{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;user-select:none;}
+    .size-guide table{width:100%;border-collapse:collapse;margin-top:12px;font-size:11px;}
+    .size-guide th{background:var(--black);color:var(--white);padding:6px 8px;text-align:center;font-weight:600;}
+    .size-guide td{border:1px solid var(--gray-200);padding:6px 8px;text-align:center;color:var(--gray-600);}
+    .size-guide tr:nth-child(even) td{background:var(--white);}
+    /* ── NEWSLETTER POPUP ── */
+    .nl-popup{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;}
+    .nl-popup.open{display:flex;animation:fadeIn 0.3s ease;}
+    .nl-popup-box{background:var(--white);max-width:480px;width:90%;padding:48px 40px;position:relative;text-align:center;}
+    .nl-popup-close{position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-400);line-height:1;}
+    .nl-popup-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;}
+    .nl-popup h3{font-size:24px;font-weight:200;letter-spacing:1px;margin-bottom:12px;}
+    .nl-popup p{font-size:13px;color:var(--gray-600);margin-bottom:24px;line-height:1.6;}
+    .nl-popup-form{display:flex;flex-direction:column;gap:10px;}
+    .nl-popup-form input{padding:12px 16px;border:1px solid var(--gray-200);font-size:13px;font-family:var(--font);outline:none;}
+    .nl-popup-form button{padding:14px;background:var(--black);color:var(--white);border:none;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:var(--font);}
+    .nl-popup-skip{margin-top:14px;font-size:11px;color:var(--gray-400);cursor:pointer;text-decoration:underline;}
+    /* ── POLITICAS MODAL ── */
+    .pol-modal{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.55);align-items:flex-start;justify-content:center;padding-top:60px;}
+    .pol-modal.open{display:flex;animation:fadeIn 0.3s ease;}
+    .pol-box{background:var(--white);max-width:640px;width:90%;max-height:80vh;overflow-y:auto;padding:48px 40px;position:relative;}
+    .pol-box h2{font-size:20px;font-weight:700;margin-bottom:24px;}
+    .pol-box h3{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:20px 0 8px;}
+    .pol-box p,.pol-box li{font-size:13px;color:var(--gray-600);line-height:1.7;}
+    .pol-box ul{padding-left:18px;margin-bottom:12px;}
+    .pol-close{position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;cursor:pointer;color:var(--gray-400);}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   </style>
 </head>
 <body>
@@ -526,6 +567,32 @@
   </div>
 </div>
 
+<!-- SOBRE NOSOTROS -->
+<section class="sobre-section" id="nosotros">
+  <div class="sobre-inner">
+    <p class="sobre-eyebrow">Nuestra historia</p>
+    <h2 class="sobre-title">Nacimos para movernos</h2>
+    <p class="sobre-body">OV Active nació de una obsesión: ropa deportiva que combine rendimiento real con estética minimal. Cada prenda está pensada para la mujer que no elige entre moverse y verse bien.</p>
+    <div class="sobre-values">
+      <div>
+        <div class="sobre-val-icon">○</div>
+        <div class="sobre-val-title">Calidad sin concesiones</div>
+        <p class="sobre-val-text">Telas técnicas de alta densidad. Costuras que aguantan. Diseño que dura.</p>
+      </div>
+      <div>
+        <div class="sobre-val-icon">△</div>
+        <div class="sobre-val-title">Diseño argentino</div>
+        <p class="sobre-val-text">Paleta neutral, cortes que favorecen. Pensado desde Buenos Aires para el mundo.</p>
+      </div>
+      <div>
+        <div class="sobre-val-icon">□</div>
+        <div class="sobre-val-title">Comunidad real</div>
+        <p class="sobre-val-text">No modelos, no filtros. Mujeres reales en movimiento. Así es OV Active.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- NEWSLETTER -->
 <section class="newsletter">
   <p class="newsletter-eyebrow">OV Community</p>
@@ -547,13 +614,13 @@
     <div class="footer-col">
       <h4>Ayuda</h4>
       <a href="#">Seguimiento de pedido</a>
-      <a href="#">Devoluciones</a>
-      <a href="#">Guía de talles</a>
+      <a href="#" onclick="openPoliticas('envios');return false;">Envíos y devoluciones</a>
+      <a href="#" onclick="openPoliticas('talles');return false;">Guía de talles</a>
       <a href="#">Contacto</a>
     </div>
     <div class="footer-col">
       <h4>Marca</h4>
-      <a href="#">Sobre OV Active</a>
+      <a href="#nosotros" onclick="document.getElementById('nosotros').scrollIntoView({behavior:'smooth'});return false;">Sobre OV Active</a>
       <a href="#">Nuestra historia</a>
       <a href="#">Sustentabilidad</a>
     </div>
@@ -593,6 +660,19 @@
       <div class="modal-sizes" id="modal-sizes"></div>
       <div class="modal-actions">
         <button class="btn-add-cart" onclick="addToCartFromModal()">Agregar al carrito</button>
+        <details class="size-guide">
+          <summary>Guía de talles</summary>
+          <table>
+            <thead><tr><th>Talle</th><th>Busto</th><th>Cintura</th><th>Cadera</th></tr></thead>
+            <tbody>
+              <tr><td>XS</td><td>78–82 cm</td><td>60–64 cm</td><td>84–88 cm</td></tr>
+              <tr><td>S</td><td>83–87 cm</td><td>65–69 cm</td><td>89–93 cm</td></tr>
+              <tr><td>M</td><td>88–92 cm</td><td>70–74 cm</td><td>94–98 cm</td></tr>
+              <tr><td>L</td><td>93–98 cm</td><td>75–80 cm</td><td>99–104 cm</td></tr>
+              <tr><td>XL</td><td>99–104 cm</td><td>81–87 cm</td><td>105–111 cm</td></tr>
+            </tbody>
+          </table>
+        </details>
         <div class="modal-guarantees">
           <div class="modal-guarantee">🚚 Envío gratis<br/>en compras +$999</div>
           <div class="modal-guarantee">↩ Devolución<br/>sin costo</div>
@@ -629,7 +709,62 @@
   </div>
 </div>
 
+<!-- NEWSLETTER POPUP -->
+<div class="nl-popup" id="nl-popup">
+  <div class="nl-popup-box">
+    <button class="nl-popup-close" onclick="closeNlPopup()">×</button>
+    <p class="nl-popup-eyebrow">OV Community</p>
+    <h3>10% OFF en tu primera compra</h3>
+    <p>Suscribite y recibí descuentos exclusivos, lanzamientos y novedades antes que nadie.</p>
+    <div class="nl-popup-form">
+      <input type="email" id="nl-popup-email" placeholder="Tu correo electrónico" />
+      <button onclick="submitNlPopup()">Quiero mi descuento</button>
+    </div>
+    <div class="nl-popup-skip" onclick="closeNlPopup()">No gracias, continuar sin descuento</div>
+  </div>
+</div>
+<!-- POLITICAS MODAL -->
+<div class="pol-modal" id="pol-modal">
+  <div class="pol-box">
+    <button class="pol-close" onclick="closePoliticas()">×</button>
+    <div id="pol-content-envios" style="display:none">
+      <h2>Envíos y Devoluciones</h2>
+      <h3>Tiempos de envío</h3>
+      <p>AMBA: 2–4 días hábiles · Interior: 4–8 días hábiles.</p>
+      <h3>Costos</h3>
+      <ul><li>Envío gratis en compras mayores a $9.999</li><li>Compras menores: tarifa según destino calculada al finalizar</li></ul>
+      <h3>Cambios y devoluciones</h3>
+      <p>Aceptamos cambios dentro de los 30 días corridos desde la recepción, con producto sin uso y etiquetas originales.</p>
+      <h3>Cómo solicitar un cambio</h3>
+      <ul><li>Escribinos por WhatsApp o email con tu número de pedido</li><li>El envío del cambio está a cargo del comprador</li><li>Productos en descuento no tienen cambio</li></ul>
+    </div>
+    <div id="pol-content-talles" style="display:none">
+      <h2>Guía de Talles</h2>
+      <h3>Cómo medirte</h3>
+      <p>Usá una cinta métrica ajustada al cuerpo y medí en las zonas indicadas. Si estás entre dos talles, ir al mayor.</p>
+      <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:13px;">
+        <thead><tr style="background:var(--black);color:var(--white)"><th style="padding:10px">Talle</th><th style="padding:10px">Busto</th><th style="padding:10px">Cintura</th><th style="padding:10px">Cadera</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">XS</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">78–82</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">60–64</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">84–88</td></tr>
+          <tr style="background:#f2efe9"><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">S</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">83–87</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">65–69</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">89–93</td></tr>
+          <tr><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">M</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">88–92</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">70–74</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">94–98</td></tr>
+          <tr style="background:#f2efe9"><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">L</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">93–98</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">75–80</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">99–104</td></tr>
+          <tr><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">XL</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">99–104</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">81–87</td><td style="padding:8px;border:1px solid #e6e1d8;text-align:center">105–111</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <script>
+  // Newsletter popup
+  function openNlPopup(){document.getElementById('nl-popup').classList.add('open');}
+  function closeNlPopup(){document.getElementById('nl-popup').classList.remove('open');sessionStorage.setItem('nl_closed','1');}
+  function submitNlPopup(){var e=document.getElementById('nl-popup-email').value;if(e&&e.includes('@')){closeNlPopup();}else{alert('Ingresá un email válido');}}
+  if(!sessionStorage.getItem('nl_closed')){setTimeout(openNlPopup,8000);}
+  // Políticas
+  function openPoliticas(s){document.getElementById('pol-content-envios').style.display='none';document.getElementById('pol-content-talles').style.display='none';document.getElementById('pol-content-'+s).style.display='block';document.getElementById('pol-modal').classList.add('open');}
+  function closePoliticas(){document.getElementById('pol-modal').classList.remove('open');}
+
   const { createClient } = supabase;
   const sb = createClient(
     'https://glyqnvzaqzlqmlkkpibk.supabase.co',

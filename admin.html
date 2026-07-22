@@ -559,9 +559,18 @@
       .kpi-grid { grid-template-columns: repeat(2,1fr); }
       .dash-grid { grid-template-columns: 1fr; }
     }
+    #login-overlay{position:fixed;inset:0;background:var(--sidebar);z-index:2000;display:flex;align-items:center;justify-content:center;}
+    .login-box{background:#fff;padding:44px 40px;width:340px;text-align:center;}
+    .login-box h1{font-size:20px;letter-spacing:6px;margin-bottom:4px;}
+    .login-box p{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#999;margin-bottom:26px;}
+    .login-box input{width:100%;padding:12px 14px;margin-bottom:12px;border:1px solid #ddd;font-size:14px;font-family:inherit;outline:none;}
+    .login-box input:focus{border-color:var(--sidebar);}
+    .login-box button{width:100%;padding:13px;background:var(--sidebar);color:#fff;border:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+    #login-msg{color:#c05a5a;font-size:12px;margin-top:12px;min-height:14px;}
   </style>
 </head>
 <body>
+<div id="login-overlay"><form class="login-box" onsubmit="doLogin(event)"><h1>OV</h1><p>Panel de administración</p><input type="email" id="login-email" placeholder="Email" required /><input type="password" id="login-pass" placeholder="Contraseña" required /><button type="submit">Ingresar</button><div id="login-msg"></div></form></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -611,13 +620,17 @@
       Configuración
     </button>
 
-    <button class="nav-item" onclick="window.open('tienda.html','_blank')">
+    <button class="nav-item" onclick="window.open('index.html','_blank')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
         <polyline points="15 3 21 3 21 9"/>
         <line x1="10" y1="14" x2="21" y2="3"/>
       </svg>
       Ver tienda
+    </button>
+    <button class="nav-item" onclick="doLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Cerrar sesión
     </button>
   </nav>
 
@@ -1274,6 +1287,10 @@
   document.getElementById('product-modal').addEventListener('click', function(e) {
     if (e.target === this) closeProductModal();
   });
+
+  async function doLogin(ev){ev.preventDefault();var m=document.getElementById("login-msg");m.textContent="";var r=await sb.auth.signInWithPassword({email:document.getElementById("login-email").value,password:document.getElementById("login-pass").value});if(r.error){m.textContent="Email o contraseña incorrectos";}else{location.reload();}}
+  async function doLogout(){await sb.auth.signOut();location.reload();}
+  (async function(){try{var s=await sb.auth.getSession();if(s.data.session){document.getElementById("login-overlay").style.display="none";}}catch(_e){}})();
 </script>
 </body>
 </html>

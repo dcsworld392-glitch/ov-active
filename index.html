@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OV Active</title>
+  <title>OV</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -57,6 +57,9 @@
       text-decoration: none; display: flex; align-items: center;
     }
     .logo img { height: 56px; width: auto; display: block; filter: brightness(0); }
+    .logo { gap: 12px; color: var(--black); }
+    .logo-mark { height: 26px; width: auto; display: block; }
+    .logo-text { font-size: 26px; font-weight: 300; letter-spacing: 8px; line-height: 1; }
 
     .header-actions {
       display: flex; justify-content: flex-end;
@@ -462,7 +465,7 @@
       <a onclick="filterBy('hoodies');return false;">Hoodies</a>
       <a onclick="filterBy('accesorios');return false;">Accesorios</a>
     </nav>
-    <a class="logo" href="#"><img src="./ov_logo.png" alt="OV Active" /></a>
+    <a class="logo" href="#"><svg class="logo-mark" viewBox="0 0 46 26" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="14" cy="13" r="10"/><circle cx="31" cy="13" r="10"/></svg><span class="logo-text">OV</span></a>
     <div class="header-actions">
       <button aria-label="Buscar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
@@ -481,7 +484,7 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-bg">
-    <img src="https://images.unsplash.com/photo-1483721310020-03333e577078?w=1600&q=80&fit=crop" alt="OV Active Hero" />
+    <img src="https://images.unsplash.com/photo-1483721310020-03333e577078?w=1600&q=80&fit=crop" alt="OV Hero" />
   </div>
   <div class="hero-num">25</div>
   <div class="hero-content">
@@ -572,7 +575,7 @@
   <div class="sobre-inner">
     <p class="sobre-eyebrow">Nuestra historia</p>
     <h2 class="sobre-title">Nacimos para movernos</h2>
-    <p class="sobre-body">OV Active nació de una obsesión: ropa deportiva que combine rendimiento real con estética minimal. Cada prenda está pensada para la mujer que no elige entre moverse y verse bien.</p>
+    <p class="sobre-body">OV nació de una obsesión: ropa deportiva que combine rendimiento real con estética minimal. Cada prenda está pensada para la mujer que no elige entre moverse y verse bien.</p>
     <div class="sobre-values">
       <div>
         <div class="sobre-val-icon">○</div>
@@ -587,7 +590,7 @@
       <div>
         <div class="sobre-val-icon">□</div>
         <div class="sobre-val-title">Comunidad real</div>
-        <p class="sobre-val-text">No modelos, no filtros. Mujeres reales en movimiento. Así es OV Active.</p>
+        <p class="sobre-val-text">No modelos, no filtros. Mujeres reales en movimiento. Así es OV.</p>
       </div>
     </div>
   </div>
@@ -608,7 +611,7 @@
 <footer>
   <div class="footer-grid">
     <div>
-      <a href="#" class="footer-logo">OV Active</a>
+      <a href="#" class="footer-logo">OV</a>
       <p class="footer-tagline">Indumentaria deportiva de alto rendimiento. Diseñada para mover tu cuerpo y elevar tu mente.</p>
     </div>
     <div class="footer-col">
@@ -620,7 +623,7 @@
     </div>
     <div class="footer-col">
       <h4>Marca</h4>
-      <a href="#nosotros" onclick="document.getElementById('nosotros').scrollIntoView({behavior:'smooth'});return false;">Sobre OV Active</a>
+      <a href="#nosotros" onclick="document.getElementById('nosotros').scrollIntoView({behavior:'smooth'});return false;">Sobre OV</a>
       <a href="#">Nuestra historia</a>
       <a href="#">Sustentabilidad</a>
     </div>
@@ -632,7 +635,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <p>© 2025 OV Active. Todos los derechos reservados.</p>
+    <p>© 2026 OV. Todos los derechos reservados.</p>
     <div class="social-links">
       <a href="#">Instagram</a>
       <a href="#">TikTok</a>
@@ -732,7 +735,7 @@
       <h3>Tiempos de envío</h3>
       <p>AMBA: 2–4 días hábiles · Interior: 4–8 días hábiles.</p>
       <h3>Costos</h3>
-      <ul><li>Envío gratis en compras mayores a $9.999</li><li>Compras menores: tarifa según destino calculada al finalizar</li></ul>
+      <ul><li>Envío gratis en compras mayores a $999</li><li>Compras menores: tarifa según destino calculada al finalizar</li></ul>
       <h3>Cambios y devoluciones</h3>
       <p>Aceptamos cambios dentro de los 30 días corridos desde la recepción, con producto sin uso y etiquetas originales.</p>
       <h3>Cómo solicitar un cambio</h3>

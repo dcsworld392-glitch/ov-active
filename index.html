@@ -601,10 +601,11 @@
   <p class="newsletter-eyebrow">OV Community</p>
   <h2>Sumate al movimiento</h2>
   <p>Sé la primera en conocer lanzamientos, drops y ofertas exclusivas.</p>
-  <form class="newsletter-form" onsubmit="return false;">
-    <input type="email" placeholder="Tu correo electrónico" />
+  <form class="newsletter-form" onsubmit="submitNlFooter(event);return false;">
+    <input type="email" id="nl-footer-email" placeholder="Tu correo electrónico" required />
     <button type="submit">Unirme</button>
   </form>
+  <p id="nl-footer-msg" style="margin-top:14px;font-size:12px;letter-spacing:1px;color:var(--accent);min-height:16px;"></p>
 </section>
 
 <!-- FOOTER -->
@@ -616,30 +617,26 @@
     </div>
     <div class="footer-col">
       <h4>Ayuda</h4>
-      <a href="#">Seguimiento de pedido</a>
       <a href="#" onclick="openPoliticas('envios');return false;">Envíos y devoluciones</a>
       <a href="#" onclick="openPoliticas('talles');return false;">Guía de talles</a>
-      <a href="#">Contacto</a>
+      <a href="mailto:dcsworld392@gmail.com">Contacto</a>
     </div>
     <div class="footer-col">
       <h4>Marca</h4>
       <a href="#nosotros" onclick="document.getElementById('nosotros').scrollIntoView({behavior:'smooth'});return false;">Sobre OV</a>
-      <a href="#">Nuestra historia</a>
-      <a href="#">Sustentabilidad</a>
+      <a href="#nosotros" onclick="document.getElementById(&#39;nosotros&#39;).scrollIntoView({behavior:&#39;smooth&#39;});return false;">Nuestra historia</a>
     </div>
     <div class="footer-col">
       <h4>Seguinos</h4>
       <a href="#" id="footer-ig">Instagram</a>
       <a href="#" id="footer-tt">TikTok</a>
-      <a href="#">Pinterest</a>
     </div>
   </div>
   <div class="footer-bottom">
     <p>© 2026 OV. Todos los derechos reservados.</p>
     <div class="social-links">
-      <a href="#">Instagram</a>
-      <a href="#">TikTok</a>
-      <a href="#">Pinterest</a>
+      <a href="#" id="footer-ig2">Instagram</a>
+      <a href="#" id="footer-tt2">TikTok</a>
     </div>
   </div>
 </footer>
@@ -762,7 +759,10 @@
   // Newsletter popup
   function openNlPopup(){document.getElementById('nl-popup').classList.add('open');}
   function closeNlPopup(){document.getElementById('nl-popup').classList.remove('open');sessionStorage.setItem('nl_closed','1');}
-  function submitNlPopup(){var e=document.getElementById('nl-popup-email').value;if(e&&e.includes('@')){closeNlPopup();}else{alert('Ingresá un email válido');}}
+  async function subscribeEmail(email,source){try{var res=await sb.from('subscribers').insert({email:email.toLowerCase().trim(),source:source});return !res.error||res.error.code==='23505';}catch(_e){return false;}}
+  function showNlOk(){var b=document.getElementById('pago-banner');document.getElementById('pago-banner-msg').textContent='✓ ¡Listo! Ya sos parte de OV Community.';b.className='pago-banner aprobado';setTimeout(function(){b.className='pago-banner';},5000);}
+  async function submitNlPopup(){var e=document.getElementById('nl-popup-email').value;if(e&&e.includes('@')){var ok=await subscribeEmail(e,'popup');closeNlPopup();if(ok){showNlOk();}else{alert('No pudimos suscribirte, probá de nuevo.');}}else{alert('Ingresá un email válido');}}
+  async function submitNlFooter(ev){var inp=document.getElementById('nl-footer-email');var m=document.getElementById('nl-footer-msg');if(inp.value&&inp.value.includes('@')){var ok=await subscribeEmail(inp.value,'footer');m.textContent=ok?'✓ ¡Listo! Ya sos parte de OV Community.':'No pudimos suscribirte, probá de nuevo.';if(ok){inp.value='';}}else{m.textContent='Ingresá un email válido';}}
   if(!sessionStorage.getItem('nl_closed')){setTimeout(openNlPopup,8000);}
   // Políticas
   function openPoliticas(s){document.getElementById('pol-content-envios').style.display='none';document.getElementById('pol-content-talles').style.display='none';document.getElementById('pol-content-'+s).style.display='block';document.getElementById('pol-modal').classList.add('open');}
@@ -791,7 +791,9 @@
     if (s.announcement_bar) document.getElementById('announcement-bar').textContent = s.announcement_bar;
     if (s.hero_eyebrow || s.hero_subtitle) document.getElementById('hero-eyebrow').textContent = s.hero_eyebrow || s.hero_subtitle;
     if (s.instagram_url) document.getElementById('footer-ig').href = s.instagram_url;
+    if (s.instagram_url) { var ig2 = document.getElementById('footer-ig2'); if (ig2) ig2.href = s.instagram_url; }
     if (s.tiktok_url)    document.getElementById('footer-tt').href = s.tiktok_url;
+    if (s.tiktok_url) { var tt2 = document.getElementById('footer-tt2'); if (tt2) tt2.href = s.tiktok_url; }
   }
 
   // Load products
@@ -844,6 +846,8 @@
   }
 
   function filterBy(slug) {
+    var _pg = document.getElementById('productos');
+    if (_pg) { var _r = _pg.getBoundingClientRect(); if (_r.top > window.innerHeight || _r.bottom < 120) _pg.scrollIntoView({behavior:'smooth'}); }
     document.querySelectorAll('.filter-chip').forEach(c =>
       c.classList.toggle('active', (!slug && c.textContent==='Todo') || c.textContent.toLowerCase()===slug)
     );

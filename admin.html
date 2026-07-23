@@ -838,6 +838,19 @@
           Guardar cambios
         </button>
       </div>
+      <div class="card" style="margin-bottom:24px">
+        <div class="card-header">
+          <span class="card-title">Zonas de envío</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost btn-sm" onclick="addZoneRow()">+ Agregar zona</button>
+            <button class="btn btn-primary btn-sm" onclick="saveZones()">Guardar zonas</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:20px 24px">
+          <div id="zones-list"></div>
+        </div>
+      </div>
+
       <div class="settings-groups" id="settings-container">
         <div class="loading">Cargando configuración…</div>
       </div>
@@ -1307,9 +1320,61 @@
   }
 
   // ── INIT ──
+  let shippingZones = [];
+  async function loadZones() {
+    const { data, error } = await sb.from('shipping_zones').select('*').order('sort_order');
+    if (error) { toast('Error cargando zonas', 'error'); return; }
+    shippingZones = data || [];
+    renderZones();
+  }
+  function renderZones() {
+    document.getElementById('zones-list').innerHTML = shippingZones.map(function(z, idx) {
+      return '<div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">' +
+        '<input type="text" value="' + (z.name||'').replace(/"/g,'&quot;') + '" oninput="updateZoneField(' + idx + ',\'name\',this.value)" style="flex:1;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:var(--font)" placeholder="Nombre de la zona" />' +
+        '<input type="number" value="' + (z.price||0) + '" oninput="updateZoneField(' + idx + ',\'price\',this.value)" style="width:140px;padding:9px 12px;border:1.5px solid var(--gray-200);border-radius:8px;font-size:13px;font-family:var(--font)" placeholder="Precio" />' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteZoneRow(' + idx + ')">✕</button>' +
+      '</div>';
+    }).join('') || '<p style="color:var(--gray-400);font-size:13px">Sin zonas cargadas. Agregá una para empezar.</p>';
+  }
+  function addZoneRow() {
+    shippingZones.push({ name: '', price: 0, sort_order: shippingZones.length });
+    renderZones();
+  }
+  function updateZoneField(idx, field, value) {
+    shippingZones[idx][field] = field === 'price' ? (parseFloat(value)||0) : value;
+  }
+  async function deleteZoneRow(idx) {
+    var z = shippingZones[idx];
+    if (z.id) {
+      if (!confirm('¿Eliminar esta zona?')) return;
+      var res = await sb.from('shipping_zones').delete().eq('id', z.id);
+      if (res.error) { toast('Error al eliminar', 'error'); return; }
+    }
+    shippingZones.splice(idx, 1);
+    renderZones();
+    toast('Zona eliminada', 'success');
+  }
+  async function saveZones() {
+    var rows = shippingZones.filter(function(z){ return (z.name||'').trim(); });
+    var toInsert = rows.filter(function(z){ return !z.id; }).map(function(z, i){ return { name: z.name.trim(), price: z.price||0, sort_order: i }; });
+    var toUpdate = rows.filter(function(z){ return z.id; });
+    var hasError = false;
+    if (toInsert.length) {
+      var r1 = await sb.from('shipping_zones').insert(toInsert);
+      if (r1.error) hasError = true;
+    }
+    for (var i = 0; i < toUpdate.length; i++) {
+      var z = toUpdate[i];
+      var r2 = await sb.from('shipping_zones').update({ name: z.name.trim(), price: z.price||0 }).eq('id', z.id);
+      if (r2.error) hasError = true;
+    }
+    if (hasError) { toast('Error al guardar zonas', 'error'); } else { toast('Zonas guardadas ✓', 'success'); }
+    loadZones();
+  }
+
   async function init() {
     await loadCategories();
-    await Promise.all([loadDashboard(), loadProducts(), loadOrders(), loadSettings()]);
+    await Promise.all([loadDashboard(), loadProducts(), loadOrders(), loadSettings(), loadZones()]);
   }
 
   init();

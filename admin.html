@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OV — Admin</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -567,6 +568,13 @@
     .login-box input:focus{border-color:var(--sidebar);}
     .login-box button{width:100%;padding:13px;background:var(--sidebar);color:#fff;border:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
     #login-msg{color:#c05a5a;font-size:12px;margin-top:12px;min-height:14px;}
+    .label-box { border: 2px solid #141414; padding: 22px; font-family: var(--font); }
+    .label-eyebrow { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px; }
+    @media print {
+      body * { visibility: hidden; }
+      #label-content, #label-content * { visibility: visible; }
+      #label-content { position: absolute; top: 0; left: 0; width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -804,9 +812,11 @@
               <th>#Orden</th>
               <th>Cliente</th>
               <th>Email</th>
+              <th>Envío</th>
               <th>Total</th>
               <th>Estado</th>
               <th>Fecha</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="orders-body">
@@ -911,6 +921,25 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
         Guardar producto
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ETIQUETA -->
+<div class="modal-overlay" id="label-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <span class="modal-title">Etiqueta de envío</span>
+      <button class="modal-close" onclick="closeLabel()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="label-content"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeLabel()">Cerrar</button>
+      <button class="btn btn-primary" onclick="window.print()">Imprimir</button>
     </div>
   </div>
 </div>
@@ -1197,7 +1226,7 @@
   function renderOrders(list) {
     const tbody = document.getElementById('orders-body');
     if (!list.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--gray-400)">Sin órdenes</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray-400)">Sin órdenes</td></tr>`;
       return;
     }
     tbody.innerHTML = list.map(o => `
@@ -1205,9 +1234,11 @@
         <td style="font-weight:600">#${o.order_number||'—'}</td>
         <td>${o.customer_name||'—'}</td>
         <td style="color:var(--gray-400)">${o.customer_email||'—'}</td>
+        <td>${o.shipping ? (o.shipping.city||'—') + ', ' + (o.shipping.province||'') : '—'}</td>
         <td style="font-weight:600">${money(o.total)}</td>
         <td>${statusBadge(o.status)}</td>
         <td style="color:var(--gray-400);font-size:12px">${dateStr(o.created_at)}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openLabel('${o.id}')">Etiqueta</button></td>
       </tr>`).join('');
   }
 
@@ -1287,6 +1318,40 @@
   document.getElementById('product-modal').addEventListener('click', function(e) {
     if (e.target === this) closeProductModal();
   });
+  document.getElementById('label-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeLabel();
+  });
+
+  function openLabel(id) {
+    var o = allOrders.find(function(x){ return x.id === id; });
+    if (!o) return;
+    var sh = o.shipping || {};
+    document.getElementById('label-content').innerHTML = 
+      '<div class="label-box">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #141414;padding-bottom:12px;margin-bottom:14px">' +
+        '<div style="font-size:22px;font-weight:800;letter-spacing:5px">OV</div>' +
+        '<div style="font-size:11px;text-align:right;color:#555">Pedido #' + (o.order_number||'—') + '<br>' + dateStr(o.created_at) + '</div>' +
+      '</div>' +
+      '<div class="label-eyebrow">Remitente</div>' +
+      '<div style="font-size:13px;font-weight:700;margin-bottom:14px">OV</div>' +
+      '<div class="label-eyebrow">Destinatario</div>' +
+      '<div style="font-size:16px;font-weight:800;margin-bottom:2px">' + (sh.name || o.customer_name || '—') + '</div>' +
+      '<div style="font-size:13px">' + (sh.address || '—') + '</div>' +
+      '<div style="font-size:13px">' + (sh.city||'—') + ', ' + (sh.province||'—') + (sh.zip ? ' (CP ' + sh.zip + ')' : '') + '</div>' +
+      '<div style="font-size:13px;margin-top:4px">Tel: ' + (sh.phone || '—') + '</div>' +
+      '<div style="margin-top:18px;text-align:center">' +
+        '<canvas id="barcode-canvas"></canvas>' +
+        '<div style="font-family:monospace;font-size:14px;letter-spacing:3px;margin-top:4px">' + (o.tracking_code||'—') + '</div>' +
+      '</div>' +
+      '</div>';
+    document.getElementById('label-modal').classList.add('open');
+    setTimeout(function(){
+      if (window.JsBarcode && o.tracking_code) {
+        try { JsBarcode('#barcode-canvas', o.tracking_code, {format:'CODE128', displayValue:false, height:50, width:2, margin:0}); } catch(e) {}
+      }
+    }, 50);
+  }
+  function closeLabel() { document.getElementById('label-modal').classList.remove('open'); }
 
   async function doLogin(ev){ev.preventDefault();var m=document.getElementById("login-msg");m.textContent="";var r=await sb.auth.signInWithPassword({email:document.getElementById("login-email").value,password:document.getElementById("login-pass").value});if(r.error){m.textContent="Email o contraseña incorrectos";}else{location.reload();}}
   async function doLogout(){await sb.auth.signOut();location.reload();}

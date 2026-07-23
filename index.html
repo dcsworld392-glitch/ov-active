@@ -1,4 +1,4 @@
-í<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -710,7 +710,10 @@
     </div>
     <div class="ship-fields">
       <div class="ship-title">Datos de envío</div>
-      <select id="ship-zone" onchange="onZoneChange()" required><option value="" disabled selected>Seleccioná tu zona</option></select>
+      <div id="ship-zone-wrap">
+        <select id="ship-zone" onchange="onZoneChange()" required><option value="" disabled selected>Seleccioná tu zona</option></select>
+      </div>
+      <div id="ship-zone-free-msg" style="display:none;font-size:12px;color:var(--gray-600);padding:2px 0">✓ Envío gratis aplicado</div>
       <input type="text" id="ship-name" placeholder="Nombre y apellido" required />
       <input type="tel" id="ship-phone" placeholder="Teléfono" required />
       <input type="text" id="ship-address" placeholder="Dirección (calle y número)" required />
@@ -831,17 +834,24 @@
     selectedShippingCost = sel.value ? parseFloat(sel.value) : 0;
     updateTotalDisplay();
   }
+  function isFreeShipping() {
+    var subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+    return subtotal >= freeShippingThreshold && subtotal > 0;
+  }
   function updateTotalDisplay() {
     var subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
-    var freeShip = subtotal >= freeShippingThreshold && subtotal > 0;
+    var freeShip = isFreeShipping();
     var effectiveShipping = freeShip ? 0 : selectedShippingCost;
     document.getElementById('cart-total-price').textContent = money(subtotal + effectiveShipping);
     var sp = document.getElementById('cart-shipping-price');
     if (sp) sp.textContent = freeShip ? 'Gratis' : (selectedShippingCost > 0 ? money(selectedShippingCost) : 'Elegí tu zona');
+    var zw = document.getElementById('ship-zone-wrap');
+    var zm = document.getElementById('ship-zone-free-msg');
+    if (zw) zw.style.display = freeShip ? 'none' : '';
+    if (zm) zm.style.display = freeShip ? 'block' : 'none';
   }
   function getEffectiveShipping() {
-    var subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
-    return (subtotal >= freeShippingThreshold && subtotal > 0) ? 0 : selectedShippingCost;
+    return isFreeShipping() ? 0 : selectedShippingCost;
   }
 
   // Load products
@@ -1031,8 +1041,12 @@
       shipping[shipFields[sf].replace('ship-','')] = el.value.trim();
     }
     var zoneSel = document.getElementById('ship-zone');
-    if (!zoneSel.value) { zoneSel.focus(); alert('Seleccioná tu zona de envío.'); return; }
-    shipping.zone = zoneSel.selectedOptions[0].dataset.name;
+    if (!isFreeShipping()) {
+      if (!zoneSel.value) { zoneSel.focus(); alert('Seleccioná tu zona de envío.'); return; }
+      shipping.zone = zoneSel.selectedOptions[0].dataset.name;
+    } else {
+      shipping.zone = 'Envío gratis';
+    }
     shipping.zone_price = getEffectiveShipping();
     const btn = document.getElementById('checkout-btn');
     btn.disabled = true;

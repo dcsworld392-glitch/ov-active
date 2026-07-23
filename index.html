@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+í<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -364,7 +364,13 @@
     .cart-item-price { font-size: 13px; font-weight: 700; }
     .cart-footer { padding: 20px 28px; border-top: 1px solid var(--gray-200); }
     .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 14px; font-weight: 700; }
-    .cart-checkout { width: 100%; padding: 16px; background: var(--black); color: var(--white); border: none; font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: var(--font); display: flex; align-items: center; justify-content: center; gap: 10px; transition: opacity 0.2s; }
+    .ship-fields { padding: 0 28px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ship-fields input, .ship-fields select { padding: 11px 13px; border: 1px solid var(--gray-200); background: var(--white); font-size: 13px; font-family: var(--font); outline: none; }
+.ship-fields input:focus, .ship-fields select:focus { border-color: var(--black); }
+.ship-row { display: flex; gap: 10px; }
+.ship-row > * { flex: 1; min-width: 0; }
+.ship-title { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-600); margin-bottom: 2px; }
+.cart-checkout { width: 100%; padding: 16px; background: var(--black); color: var(--white); border: none; font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; cursor: pointer; font-family: var(--font); display: flex; align-items: center; justify-content: center; gap: 10px; transition: opacity 0.2s; }
     .cart-checkout:hover { opacity: 0.85; }
     .cart-checkout:disabled { opacity: 0.5; cursor: not-allowed; }
     .mp-logo { height: 18px; }
@@ -699,6 +705,17 @@
   <div class="cart-items" id="cart-items-list"></div>
   <div class="cart-footer" id="cart-footer" style="display:none">
     <div class="cart-total"><span>Total</span><span id="cart-total-price">$0</span></div>
+    <div class="ship-fields">
+      <div class="ship-title">Datos de envío</div>
+      <input type="text" id="ship-name" placeholder="Nombre y apellido" required />
+      <input type="tel" id="ship-phone" placeholder="Teléfono" required />
+      <input type="text" id="ship-address" placeholder="Dirección (calle y número)" required />
+      <div class="ship-row">
+        <input type="text" id="ship-city" placeholder="Ciudad" required />
+        <input type="text" id="ship-zip" placeholder="Código postal" required />
+      </div>
+      <input type="text" id="ship-province" placeholder="Provincia" required />
+    </div>
     <button class="cart-checkout" id="checkout-btn" onclick="initCheckout()">
       Pagar con
       <svg class="mp-logo" viewBox="0 0 90 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -974,6 +991,13 @@
 
   async function initCheckout() {
     if (!cart.length) return;
+    var shipFields = ['ship-name','ship-phone','ship-address','ship-city','ship-zip','ship-province'];
+    var shipping = {};
+    for (var sf = 0; sf < shipFields.length; sf++) {
+      var el = document.getElementById(shipFields[sf]);
+      if (!el.value.trim()) { el.focus(); alert('Completá todos los datos de envío.'); return; }
+      shipping[shipFields[sf].replace('ship-','')] = el.value.trim();
+    }
     const btn = document.getElementById('checkout-btn');
     btn.disabled = true;
     btn.textContent = 'Procesando…';
@@ -989,7 +1013,10 @@
             qty: i.qty,
             price: i.price,
             image: i.image,
-          }))
+            size: i.size,
+            color: i.color,
+          })),
+          shipping: shipping
         })
       });
       const data = await res.json();

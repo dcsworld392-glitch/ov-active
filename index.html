@@ -829,14 +829,23 @@
 <div class="nl-popup" id="nl-popup">
   <div class="nl-popup-box">
     <button class="nl-popup-close" onclick="closeNlPopup()">×</button>
-    <p class="nl-popup-eyebrow">OV Community</p>
-    <h3>10% OFF en tu primera compra</h3>
-    <p>Suscribite y recibí descuentos exclusivos, lanzamientos y novedades antes que nadie.</p>
-    <div class="nl-popup-form">
-      <input type="email" id="nl-popup-email" placeholder="Tu correo electrónico" />
-      <button onclick="submitNlPopup()">Quiero mi descuento</button>
+    <div id="nl-popup-step1">
+      <p class="nl-popup-eyebrow">OV Community</p>
+      <h3>10% OFF en tu primera compra</h3>
+      <p>Suscribite y recibí descuentos exclusivos, lanzamientos y novedades antes que nadie.</p>
+      <div class="nl-popup-form">
+        <input type="email" id="nl-popup-email" placeholder="Tu correo electrónico" />
+        <button onclick="submitNlPopup()">Quiero mi descuento</button>
+      </div>
+      <div class="nl-popup-skip" onclick="closeNlPopup()">No gracias, continuar sin descuento</div>
     </div>
-    <div class="nl-popup-skip" onclick="closeNlPopup()">No gracias, continuar sin descuento</div>
+    <div id="nl-popup-step2" style="display:none">
+      <p class="nl-popup-eyebrow">OV Community</p>
+      <h3>¡Listo! Ya sos parte</h3>
+      <p>Usá este código en el checkout para tu 10% OFF:</p>
+      <div style="border:1.5px dashed var(--black);padding:16px;font-size:22px;font-weight:800;letter-spacing:3px;margin-bottom:20px;cursor:pointer" id="nl-coupon-code" onclick="copyNlCoupon()">BIENVENIDO10</div>
+      <button onclick="closeNlPopup()" style="padding:14px;background:var(--black);color:var(--white);border:none;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:var(--font);width:100%">Ir a comprar</button>
+    </div>
   </div>
 </div>
 <!-- POLITICAS MODAL -->
@@ -874,11 +883,11 @@
 <script>
   // Newsletter popup
   function openNlPopup(){document.getElementById('nl-popup').classList.add('open');}
-  function closeNlPopup(){document.getElementById('nl-popup').classList.remove('open');sessionStorage.setItem('nl_closed','1');}
+  function closeNlPopup(){document.getElementById('nl-popup').classList.remove('open');sessionStorage.setItem('nl_closed','1');setTimeout(function(){var s1=document.getElementById('nl-popup-step1'),s2=document.getElementById('nl-popup-step2');if(s1&&s2&&s2.style.display==='block'){s1.style.display='';s2.style.display='none';}},400);}
   async function subscribeEmail(email,source){try{var res=await sb.from('subscribers').insert({email:email.toLowerCase().trim(),source:source});return !res.error||res.error.code==='23505';}catch(_e){return false;}}
-  function showNlOk(){var b=document.getElementById('pago-banner');document.getElementById('pago-banner-msg').textContent='✓ ¡Listo! Ya sos parte de OV Community.';b.className='pago-banner aprobado';setTimeout(function(){b.className='pago-banner';},5000);}
-  async function submitNlPopup(){var e=document.getElementById('nl-popup-email').value;if(e&&e.includes('@')){var ok=await subscribeEmail(e,'popup');closeNlPopup();if(ok){showNlOk();}else{alert('No pudimos suscribirte, probá de nuevo.');}}else{alert('Ingresá un email válido');}}
-  async function submitNlFooter(ev){var inp=document.getElementById('nl-footer-email');var m=document.getElementById('nl-footer-msg');if(inp.value&&inp.value.includes('@')){var ok=await subscribeEmail(inp.value,'footer');m.textContent=ok?'✓ ¡Listo! Ya sos parte de OV Community.':'No pudimos suscribirte, probá de nuevo.';if(ok){inp.value='';}}else{m.textContent='Ingresá un email válido';}}
+  function copyNlCoupon(){var el=document.getElementById('nl-coupon-code');if(navigator.clipboard){navigator.clipboard.writeText('BIENVENIDO10');var orig=el.textContent;el.textContent='¡Copiado!';setTimeout(function(){el.textContent=orig;},1200);}}
+  async function submitNlPopup(){var e=document.getElementById('nl-popup-email').value;if(e&&e.includes('@')){var ok=await subscribeEmail(e,'popup');if(ok){document.getElementById('nl-popup-step1').style.display='none';document.getElementById('nl-popup-step2').style.display='block';}else{alert('No pudimos suscribirte, probá de nuevo.');}}else{alert('Ingresá un email válido');}}
+  async function submitNlFooter(ev){var inp=document.getElementById('nl-footer-email');var m=document.getElementById('nl-footer-msg');if(inp.value&&inp.value.includes('@')){var ok=await subscribeEmail(inp.value,'footer');m.innerHTML=ok?'✓ ¡Listo! Usá el código <strong>BIENVENIDO10</strong> en el checkout para tu 10% OFF.':'No pudimos suscribirte, probá de nuevo.';if(ok){inp.value='';}}else{m.textContent='Ingresá un email válido';}}
   if(!sessionStorage.getItem('nl_closed')){setTimeout(openNlPopup,8000);}
   // Políticas
   function openPoliticas(s){document.getElementById('pol-content-envios').style.display='none';document.getElementById('pol-content-talles').style.display='none';document.getElementById('pol-content-'+s).style.display='block';document.getElementById('pol-modal').classList.add('open');}

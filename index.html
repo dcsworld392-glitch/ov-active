@@ -705,8 +705,12 @@
   <div class="cart-items" id="cart-items-list"></div>
   <div class="cart-footer" id="cart-footer" style="display:none">
     <div class="cart-total"><span>Total</span><span id="cart-total-price">$0</span></div>
+    <div class="cart-shipping-row" style="display:flex;justify-content:space-between;font-size:12px;color:var(--gray-600);margin:-8px 0 14px 0;padding:0 28px">
+      <span>Envío</span><span id="cart-shipping-price">Elegí tu zona</span>
+    </div>
     <div class="ship-fields">
       <div class="ship-title">Datos de envío</div>
+      <select id="ship-zone" onchange="onZoneChange()" required><option value="" disabled selected>Seleccioná tu zona</option></select>
       <input type="text" id="ship-name" placeholder="Nombre y apellido" required />
       <input type="tel" id="ship-phone" placeholder="Teléfono" required />
       <input type="text" id="ship-address" placeholder="Dirección (calle y número)" required />
@@ -791,7 +795,7 @@
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdseXFudnphcXpscW1sa2twaWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMzY0NTEsImV4cCI6MjA5NzkxMjQ1MX0.fydsOTVTGD5e3dbsbwUETiyvZ7Jm7EqeFY3ahPnoQto'
   );
 
-  let allProducts = [], cart = [], currentProduct = null, selectedSize = null, selectedColor = null;
+  let allProducts = [], cart = [], currentProduct = null, selectedSize = null, selectedColor = null; let shippingZones = [], selectedShippingCost = 0;
 
   const COLOR_MAP = {
     'Negro':'#1a1a1a','Blanco':'#f0ede8','Beige':'#d4c4aa',
@@ -811,6 +815,26 @@
     if (s.instagram_url) { var ig2 = document.getElementById('footer-ig2'); if (ig2) ig2.href = s.instagram_url; }
     if (s.tiktok_url)    document.getElementById('footer-tt').href = s.tiktok_url;
     if (s.tiktok_url) { var tt2 = document.getElementById('footer-tt2'); if (tt2) tt2.href = s.tiktok_url; }
+  }
+
+  async function loadShippingZones() {
+    const { data } = await sb.from('shipping_zones').select('*').order('sort_order');
+    shippingZones = data || [];
+    const sel = document.getElementById('ship-zone');
+    if (!sel) return;
+    sel.innerHTML = '<option value="" disabled selected>Seleccioná tu zona</option>' +
+      shippingZones.map(function(z){ return '<option value="' + z.price + '" data-name="' + z.name + '">' + z.name + ' — ' + money(z.price) + '</option>'; }).join('');
+  }
+  function onZoneChange() {
+    const sel = document.getElementById('ship-zone');
+    selectedShippingCost = sel.value ? parseFloat(sel.value) : 0;
+    updateTotalDisplay();
+  }
+  function updateTotalDisplay() {
+    var subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+    document.getElementById('cart-total-price').textContent = money(subtotal + selectedShippingCost);
+    var sp = document.getElementById('cart-shipping-price');
+    if (sp) sp.textContent = selectedShippingCost > 0 ? money(selectedShippingCost) : 'Elegí tu zona';
   }
 
   // Load products
@@ -976,7 +1000,7 @@
         </div>
         <span class="cart-item-price">${money(item.price*item.qty)}</span>
       </div>`).join('');
-    document.getElementById('cart-total-price').textContent = money(cart.reduce((s,i)=>s+i.price*i.qty,0));
+    updateTotalDisplay();
   }
 
   function changeQty(idx, d) { cart[idx].qty+=d; if(cart[idx].qty<=0) cart.splice(idx,1); updateCartUI(); }
@@ -985,6 +1009,7 @@
 
   loadSettings();
   loadProducts();
+  loadShippingZones();
 
   // ── MERCADO PAGO CHECKOUT ──
   const EDGE_URL = 'https://glyqnvzaqzlqmlkkpibk.supabase.co/functions/v1/create-preference';
@@ -998,6 +1023,10 @@
       if (!el.value.trim()) { el.focus(); alert('Completá todos los datos de envío.'); return; }
       shipping[shipFields[sf].replace('ship-','')] = el.value.trim();
     }
+    var zoneSel = document.getElementById('ship-zone');
+    if (!zoneSel.value) { zoneSel.focus(); alert('Seleccioná tu zona de envío.'); return; }
+    shipping.zone = zoneSel.selectedOptions[0].dataset.name;
+    shipping.zone_price = parseFloat(zoneSel.value);
     const btn = document.getElementById('checkout-btn');
     btn.disabled = true;
     btn.textContent = 'Procesando…';

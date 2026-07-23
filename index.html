@@ -795,7 +795,7 @@
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdseXFudnphcXpscW1sa2twaWJrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMzY0NTEsImV4cCI6MjA5NzkxMjQ1MX0.fydsOTVTGD5e3dbsbwUETiyvZ7Jm7EqeFY3ahPnoQto'
   );
 
-  let allProducts = [], cart = [], currentProduct = null, selectedSize = null, selectedColor = null; let shippingZones = [], selectedShippingCost = 0;
+  let allProducts = [], cart = [], currentProduct = null, selectedSize = null, selectedColor = null; let shippingZones = [], selectedShippingCost = 0; let freeShippingThreshold = Infinity;
 
   const COLOR_MAP = {
     'Negro':'#1a1a1a','Blanco':'#f0ede8','Beige':'#d4c4aa',
@@ -815,6 +815,7 @@
     if (s.instagram_url) { var ig2 = document.getElementById('footer-ig2'); if (ig2) ig2.href = s.instagram_url; }
     if (s.tiktok_url)    document.getElementById('footer-tt').href = s.tiktok_url;
     if (s.tiktok_url) { var tt2 = document.getElementById('footer-tt2'); if (tt2) tt2.href = s.tiktok_url; }
+    if (s.shipping_free_threshold) { freeShippingThreshold = parseFloat(s.shipping_free_threshold); updateTotalDisplay(); }
   }
 
   async function loadShippingZones() {
@@ -832,9 +833,15 @@
   }
   function updateTotalDisplay() {
     var subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
-    document.getElementById('cart-total-price').textContent = money(subtotal + selectedShippingCost);
+    var freeShip = subtotal >= freeShippingThreshold && subtotal > 0;
+    var effectiveShipping = freeShip ? 0 : selectedShippingCost;
+    document.getElementById('cart-total-price').textContent = money(subtotal + effectiveShipping);
     var sp = document.getElementById('cart-shipping-price');
-    if (sp) sp.textContent = selectedShippingCost > 0 ? money(selectedShippingCost) : 'Elegí tu zona';
+    if (sp) sp.textContent = freeShip ? 'Gratis' : (selectedShippingCost > 0 ? money(selectedShippingCost) : 'Elegí tu zona');
+  }
+  function getEffectiveShipping() {
+    var subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+    return (subtotal >= freeShippingThreshold && subtotal > 0) ? 0 : selectedShippingCost;
   }
 
   // Load products
@@ -1026,7 +1033,7 @@
     var zoneSel = document.getElementById('ship-zone');
     if (!zoneSel.value) { zoneSel.focus(); alert('Seleccioná tu zona de envío.'); return; }
     shipping.zone = zoneSel.selectedOptions[0].dataset.name;
-    shipping.zone_price = parseFloat(zoneSel.value);
+    shipping.zone_price = getEffectiveShipping();
     const btn = document.getElementById('checkout-btn');
     btn.disabled = true;
     btn.textContent = 'Procesando…';
